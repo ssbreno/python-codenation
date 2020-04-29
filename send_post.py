@@ -3,7 +3,7 @@ import sys
 import hashlib
 import json
 import os
-
+from flask import Flask, request, render_template
 
 ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
 ROT = 9
@@ -35,35 +35,15 @@ def resumo_sha1(message):
     with open(message, 'w') as arq:
         json.dump(data, arq)
 
-def pretty_print_POST(req):
-
-    print('{}\n{}\r\n{}\r\n\r\n{}'.format(
-        '-----------START-----------',
-        req.method + ' ' + req.url,
-        '\r\n'.join('{}: {}'.format(k, v) for k, v in req.headers.items()),
-        req.body,
-    ))
 
 def send_formdata(message):
-    API_URL = "https://api.codenation.dev/v1/challenge/dev-ps/generate-data?token=1a03d7e86615a1fc7d41d263bcd919e0c47ce1aa"
+    API_URL = "https://api.codenation.dev/v1/challenge/dev-ps/submit-solution?token=1a03d7e86615a1fc7d41d263bcd919e0c47ce1aa"
     filepath = "D:\\Repositorios\\request_codenation\\answer.json"
-    
     try:
-        files = {
-            'file': (message, open(filepath, "rb"))
-        }
-
-        headers = {
-            'content-type' : 'multipart/form-data',
-            'cache-control': "no-cache"
-        }
-
-        req = requests.Request('POST', API_URL, files=files,  headers=headers)
-        print(req.headers)
-        prepared = req.prepare()
-        pretty_print_POST(prepared)
-
-
+        files = { 'answer' : open(filepath, "rb") }
+        req = requests.post(API_URL, files=files)
+        print(req.status_code)
+        print(req.text)
     except Exception as e:
             print ("Exception:", e)
 
